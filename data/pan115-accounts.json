@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "accounts": [
+    {
+      "id": "c78ad084-d081-4584-b78f-f372c661d094",
+      "name": "115账号",
+      "cookie": "UID=102315799_I1_1778518432; CID=021cfe3c9331587335ced32d70826df7; SEID=8257f2a7aec6cad183379764e4c8792c1313b4e8e645786b9c5a9750c70eaf20fa4d274d2de4096797c9e2411689c885769625f8bc7603b5d086c0c3; KID=a5ac8c2e1436294944be610c6ac0fbad",
+      "accessToken": "4o3ke.9dbeae29e8d82e891fbd05f24ffe3cb6.641affafbb855b4397d0d065a75ed354d2fd9b09e2ab12a0a9650ce301e14c2f",
+      "refreshToken": "4o3ke.efcbc9a0f3df2866ceb7dad956ff351a5c04c656b2fb7ad3abfcd6b8e44b9965.31360c8cad22e2c48d6c195205286a41af4c94beb354f952e22d168d8c9d38ac",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "createdAt": "2026-05-30T07:58:24.327670+00:00",
+      "updatedAt": "2026-05-30T07:58:44.943660+00:00"
+    }
+  ]
+}

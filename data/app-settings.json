@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "settings": {
+    "dailyUploadLimitEnabled": true,
+    "dailyUploadLimitBytes": 4398046511104,
+    "transferConcurrency": 4,
+    "downloadDir": "",
+    "minFreeSpaceGb": 2,
+    "workerMode": true,
+    "pan115OpenApiDelay": {
+      "globalMultiplier": 1.0,
+      "globalDelaySeconds": 0.5,
+      "listDelaySeconds": 0.5,
+      "renameDelaySeconds": 0.5,
+      "deleteDelaySeconds": 0.5,
+      "mutateDelaySeconds": 0.5,
+      "downDelaySeconds": 3.0
+    },
+    "pan115CookieApiDelay": {
+      "globalMultiplier": 1.0,
+      "globalDelaySeconds": 2.0,
+      "listDelaySeconds": 3.0,
+      "renameDelaySeconds": 1.0,
+      "deleteDelaySeconds": 2.0,
+      "mutateDelaySeconds": 1.0,
+      "downDelaySeconds": 0.5
+    }
+  }
+}

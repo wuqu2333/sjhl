@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "75bb1318-cad2-4b56-95f7-6ca564b6483a",
+      "name": "手机软件",
+      "enabled": false,
+      "sourceType": "115-cookie",
+      "syncMode": "add",
+      "intervalMinutes": 0,
+      "scheduleTime": "",
+      "profileId": "__capacity_pool__:c1a1282a-0464-4b06-aa26-579b154dfeaa",
+      "sourcePath": "",
+      "sourceCid": "3339441568933217842",
+      "cookie": "",
+      "pan115AccountId": "c78ad084-d081-4584-b78f-f372c661d094",
+      "userAgent": "",
+      "targetDir": "上传文件/手机软件",
+      "recursive": true,
+      "dedupeScope": "global",
+      "nextRunAt": "",
+      "createdAt": "2026-05-30T08:12:48.333833+00:00",
+      "updatedAt": "2026-05-30T08:12:51.621914+00:00",
+      "logs": [
+        {
+          "at": "2026-05-30T08:12:51.257964+00:00",
+          "message": "开始执行"
+        },
+        {
+          "at": "2026-05-30T08:12:51.259704+00:00",
+          "message": "源类型: 115-cookie, 源: 3339441568933217842"
+        },
+        {
+          "at": "2026-05-30T08:12:51.621604+00:00",
+          "message": "完成: 扫描 14 个, 入队 14 个, 跳过 0 个"
+        }
+      ],
+      "lastStatus": "done",
+      "lastRunAt": "2026-05-30T08:12:51.258564+00:00",
+      "lastError": "",
+      "lastSummary": {
+        "sourceType": "115-cookie",
+        "syncMode": "add",
+        "scanned": 14,
+        "queued": 14,
+        "skipped": 0
+      }
+    }
+  ]
+}
