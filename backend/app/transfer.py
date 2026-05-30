@@ -459,7 +459,7 @@ class JobQueue:
         self._scheduler_started = False
 
     def start_scheduler(self) -> None:
-        """启动定时器，每 10 秒检查一次待处理任务。workerMode 下跳过本地执行。"""
+        """启动定时器，每 10 秒检查一次待处理任务。"""
         if self._scheduler_started:
             return
         self.jobs.requeue_running()
@@ -488,6 +488,10 @@ class JobQueue:
         except Exception:
             return False
 
+    def _check_worker_mode_stop(self) -> bool:
+        """Worker 模式下返回 True 表示应停止本地传输"""
+        return self._worker_mode_enabled()
+
     def list(self, limit: int = 200):
         return self.jobs.list(limit)
 
@@ -509,6 +513,8 @@ class JobQueue:
             return self.concurrency
 
     def schedule_process(self) -> None:
+        if self._check_worker_mode_stop():
+            return
         if self._process_scheduled:
             return
         self._process_scheduled = True
@@ -629,6 +635,8 @@ class JobQueue:
     async def process(self):
         if self._process_lock.locked():
             return
+        if self._check_worker_mode_stop():
+            return
         from utils.logging import logger
         try:
             async with self._process_lock:
@@ -636,6 +644,9 @@ class JobQueue:
                 running: dict[asyncio.Task, str] = {}  # 共享槽位池
 
                 while True:
+                    if self._check_worker_mode_stop():
+                        logger.info("Worker 模式已启用，停止本地传输队列")
+                        return
                     # 共享 concurrency 个槽位，优先上传已暂存的任务
                     while len(running) < concurrency:
                         claimed = False
