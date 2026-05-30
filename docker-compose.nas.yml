@@ -16,6 +16,7 @@ services:
       - SJHL_HOST=0.0.0.0
       - SJHL_PORT=1115
       - SJHL_DATA_DIR=/app/data
+      - SJHL_FRONTEND_DIST=/app/frontend/dist
       - SJHL_CORS_ORIGINS=*
       - SJHL_TRANSFER_CONCURRENCY=2
       - TZ=Asia/Shanghai

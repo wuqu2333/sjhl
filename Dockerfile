@@ -21,6 +21,7 @@ LABEL org.opencontainers.image.description="世纪互联 SharePoint 文件传输
 ENV SJHL_HOST=0.0.0.0
 ENV SJHL_PORT=1115
 ENV SJHL_DATA_DIR=/app/data
+ENV SJHL_FRONTEND_DIST=/app/frontend/dist
 ENV SJHL_CORS_ORIGINS=*
 ENV SJHL_TRANSFER_CONCURRENCY=2
 ENV SJHL_ENABLE_DOCS=0
