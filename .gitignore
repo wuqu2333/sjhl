@@ -42,6 +42,9 @@ Thumbs.db
 *.bak
 
 # Data (contains secrets)
+data/
 backend/data/
 *.db
+*.duckdb
+*.duckdb.wal
 !backend/data/.gitkeep
