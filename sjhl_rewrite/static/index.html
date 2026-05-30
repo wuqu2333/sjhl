@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SJHL Rewrite</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --line: #d9e1ec;
+      --text: #172033;
+      --muted: #667085;
+      --brand: #1677ff;
+      --danger: #e5484d;
+      --ok: #108548;
+      --warn: #b7791f;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1218;
+        --panel: #171b23;
+        --line: #2a303b;
+        --text: #f2f5f9;
+        --muted: #9aa4b2;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding: 10px max(14px, env(safe-area-inset-left)) 10px max(14px, env(safe-area-inset-right));
+      background: #001529;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .title { font-size: 18px; font-weight: 700; white-space: nowrap; }
+    .tabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      position: sticky;
+      top: 58px;
+      z-index: 19;
+    }
+    .tab, button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: var(--panel);
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button.primary, .tab.active {
+      border-color: var(--brand);
+      background: var(--brand);
+      color: #fff;
+    }
+    button.danger { border-color: var(--danger); color: var(--danger); }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px 14px 80px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .stat .label { color: var(--muted); font-size: 14px; }
+    .stat .value { margin-top: 8px; font-size: 26px; font-weight: 750; }
+    .stat .sub { margin-top: 4px; color: var(--muted); font-size: 13px; }
+    .section { margin-top: 14px; }
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-weight: 700;
+      font-size: 17px;
+    }
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    label { display: block; color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 10px;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+    }
+    textarea { min-height: 92px; resize: vertical; }
+    .full { grid-column: 1 / -1; }
+    .list { display: grid; gap: 10px; }
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: color-mix(in srgb, var(--panel) 94%, var(--brand));
+    }
+    .item-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+    .meta { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .badge.running { color: var(--brand); border-color: var(--brand); }
+    .badge.done { color: var(--ok); border-color: var(--ok); }
+    .badge.retry { color: var(--warn); border-color: var(--warn); }
+    .badge.failed { color: var(--danger); border-color: var(--danger); }
+    .progress {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--line) 80%, transparent);
+      overflow: hidden;
+    }
+    .fill {
+      height: 100%;
+      background: var(--brand);
+      width: 0%;
+    }
+    .alert {
+      display: none;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--danger);
+      border-radius: 8px;
+      color: var(--danger);
+      background: color-mix(in srgb, var(--danger) 10%, transparent);
+    }
+    details { margin-top: 10px; }
+    pre {
+      max-height: 180px;
+      overflow: auto;
+      white-space: pre-wrap;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 760px) {
+      .grid { grid-template-columns: repeat(4, minmax(72px, 1fr)); gap: 8px; }
+      .card { padding: 12px; }
+      .stat .value { font-size: 20px; }
+      .stat .sub { font-size: 12px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .item-head { display: grid; grid-template-columns: 1fr auto; }
+      .progress { grid-template-columns: 1fr auto; }
+      .progress .speed { grid-column: 1 / -1; }
+      button, .tab { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">世纪互联 SP 管理器 · 重写版</div>
+    <button id="refreshBtn">刷新</button>
+  </header>
+  <nav class="tabs" id="tabs"></nav>
+  <main>
+    <div class="alert" id="alert"></div>
+    <section id="view"></section>
+  </main>
+
+  <script>
+    const tabs = [
+      ["dashboard", "工作台"],
+      ["profiles", "SP"],
+      ["accounts", "115"],
+      ["jobs", "传输"],
+      ["settings", "设置"],
+    ];
+    let currentTab = localStorage.getItem("sjhlRewriteTab") || "dashboard";
+    let state = { stats: {}, settings: {}, profiles: [], accounts: [], jobs: [], workerRunning: false };
+    let loading = false;
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+    const byId = (items, id) => items.find((item) => item.id === id);
+
+    function formatBytes(size) {
+      let value = Number(size || 0);
+      const units = ["B", "KB", "MB", "GB", "TB", "PB"];
+      for (const unit of units) {
+        if (Math.abs(value) < 1024 || unit === "PB") {
+          return unit === "B" ? `${Math.round(value)} ${unit}` : `${value.toFixed(2)} ${unit}`;
+        }
+        value /= 1024;
+      }
+      return "0 B";
+    }
+
+    function formatSpeed(bps) {
+      return `${formatBytes(bps || 0)}/s`;
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        ...options,
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      });
+      const text = await response.text();
+      let data = {};
+      if (text) {
+        try { data = JSON.parse(text); } catch { data = { detail: text }; }
+      }
+      if (!response.ok) {
+        throw new Error(data.detail || `HTTP ${response.status}`);
+      }
+      return data;
+    }
+
+    function showError(message) {
+      const box = $("alert");
+      box.textContent = message || "";
+      box.style.display = message ? "block" : "none";
+    }
+
+    async function loadState(silent = false) {
+      if (loading) return;
+      loading = true;
+      try {
+        state = await api("/api/state");
+        showError("");
+        render();
+      } catch (error) {
+        if (!silent) showError(error.message || String(error));
+      } finally {
+        loading = false;
+      }
+    }
+
+    function setTab(tab) {
+      currentTab = tab;
+      localStorage.setItem("sjhlRewriteTab", tab);
+      render();
+    }
+
+    function renderTabs() {
+      $("tabs").innerHTML = tabs.map(([id, name]) => `<button class="tab ${id === currentTab ? "active" : ""}" onclick="setTab('${id}')">${name}</button>`).join("");
+    }
+
+    function render() {
+      renderTabs();
+      const view = $("view");
+      if (currentTab === "profiles") view.innerHTML = renderProfiles();
+      else if (currentTab === "accounts") view.innerHTML = renderAccounts();
+      else if (currentTab === "jobs") view.innerHTML = renderJobs();
+      else if (currentTab === "settings") view.innerHTML = renderSettings();
+      else view.innerHTML = renderDashboard();
+    }
+
+    function renderDashboard() {
+      const stats = state.stats || {};
+      const jobs = stats.jobs || {};
+      return `
+        <div class="grid">
+          <div class="card stat"><div class="label">SP 容量池</div><div class="value">${stats.profiles || 0} 个</div></div>
+          <div class="card stat"><div class="label">传输任务</div><div class="value">${jobs.total || 0} 个</div><div class="sub">${jobs.running || 0} 上传 / ${jobs.queued || 0} 等待 / ${jobs.retry || 0} 重试</div></div>
+          <div class="card stat"><div class="label">去重指纹</div><div class="value">${stats.fingerprints || 0} 条</div></div>
+          <div class="card stat"><div class="label">已上传容量</div><div class="value">${formatBytes(stats.uploadedSize || 0)}</div></div>
+        </div>
+        <div class="card section">
+          <div class="section-title">
+            <span>传输队列</span>
+            <span class="badge running">总速率 ${formatSpeed(stats.speedBps || 0)}</span>
+          </div>
+          <div class="row">
+            <button class="primary" onclick="startJobs()">开始处理</button>
+            <button onclick="stopJobs()">停止取新任务</button>
+            <button onclick="loadState()">刷新</button>
+          </div>
+          <div class="list section">${renderJobList(state.jobs.slice(0, 8))}</div>
+        </div>
+      `;
+    }
+
+    function renderProfiles() {
+      return `
+        <div class="card">
+          <div class="section-title">新增或更新 SP</div>
+          <div class="form-grid">
+            <div><label>名称</label><input id="spName" placeholder="od1 / od2"></div>
+            <div><label>Drive ID</label><input id="spDriveId" placeholder="b!..."></div>
+            <div><label>Tenant ID</label><input id="spTenantId"></div>
+            <div><label>Client ID</label><input id="spClientId"></div>
+            <div><label>Client Secret</label><input id="spClientSecret" type="password"></div>
+            <div><label>根路径</label><input id="spRootPath" placeholder="例如 文档/Media，留空为根目录"></div>
+            <div class="full row"><button class="primary" onclick="saveProfile()">保存 SP</button></div>
+          </div>
+        </div>
+        <div class="card section">
+          <div class="section-title">已配置 SP</div>
+          <div class="list">
+            ${state.profiles.map((profile) => `
+              <div class="item">
+                <div class="item-head">
+                  <div>
+                    <div class="name">${esc(profile.name)}</div>
+                    <div class="meta">Drive ID: ${esc(profile.drive_id)}</div>
+                    <div class="meta">根路径: ${esc(profile.root_path || "/")}</div>
+                  </div>
+                  <div class="row">
+                    <button onclick="testProfile('${profile.id}')">测试</button>
+                    <button class="danger" onclick="deleteProfile('${profile.id}')">删除</button>
+                  </div>
+                </div>
+              </div>`).join("") || `<div class="meta">还没有 SP 配置。</div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAccounts() {
+      return `
+        <div class="card">
+          <div class="section-title">新增或更新 115 账号</div>
+          <div class="form-grid">
+            <div><label>名称</label><input id="aName" placeholder="115账号"></div>
+            <div><label>User-Agent</label><input id="aUa" placeholder="留空使用默认"></div>
+            <div class="full"><label>Cookie</label><textarea id="aCookie" placeholder="UID=...; CID=..."></textarea></div>
+            <div class="full"><label>Open Access Token</label><textarea id="aAccessToken"></textarea></div>
+            <div class="full"><label>Open Refresh Token</label><textarea id="aRefreshToken"></textarea></div>
+            <div class="full row"><button class="primary" onclick="saveAccount()">保存账号</button></div>
+          </div>
+        </div>
+        <div class="card section">
+          <div class="section-title">已配置 115</div>
+          <div class="list">
+            ${state.accounts.map((account) => `
+              <div class="item">
+                <div class="item-head">
+                  <div>
+                    <div class="name">${esc(account.name)}</div>
+                    <div class="meta">Cookie: ${account.cookie ? "已保存" : "未配置"} · Open: ${account.access_token ? "已保存" : "未配置"}</div>
+                  </div>
+                  <div class="row">
+                    <button onclick="getCloudDriveToken('${account.id}')">Cookie 获取 OpenToken</button>
+                    <button class="danger" onclick="deleteAccount('${account.id}')">删除</button>
+                  </div>
+                </div>
+              </div>`).join("") || `<div class="meta">还没有 115 账号。</div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectOptions(items, placeholder) {
+      return `<option value="">${placeholder}</option>` + items.map((item) => `<option value="${item.id}">${esc(item.name)}</option>`).join("");
+    }
+
+    function renderJobs() {
+      return `
+        <div class="card">
+          <div class="section-title">新增传输任务</div>
+          <div class="form-grid">
+            <div><label>目标 SP</label><select id="jobProfile">${selectOptions(state.profiles, "选择 SP")}</select></div>
+            <div><label>115 账号</label><select id="jobAccount">${selectOptions(state.accounts, "选择 115 账号")}</select></div>
+            <div><label>115 PickCode</label><input id="jobPickCode" placeholder="只在任务开始时取下载链接"></div>
+            <div><label>文件名</label><input id="jobFileName" placeholder="可留空，取链后自动更新"></div>
+            <div><label>目标目录</label><input id="jobRemoteDir" placeholder="例如 动漫/一人之下"></div>
+            <div><label>文件大小 Byte</label><input id="jobSize" type="number" placeholder="可留空"></div>
+            <div class="full row">
+              <button class="primary" onclick="create115Job()">添加 115 任务</button>
+              <button onclick="startJobs()">开始处理</button>
+              <button onclick="stopJobs()">停止取新任务</button>
+              <button class="danger" onclick="clearDone()">清理完成/失败</button>
+            </div>
+          </div>
+        </div>
+        <div class="card section">
+          <div class="section-title">本地文件上传</div>
+          <div class="form-grid">
+            <div><label>目标 SP</label><select id="localProfile">${selectOptions(state.profiles, "选择 SP")}</select></div>
+            <div><label>目标目录</label><input id="localRemoteDir"></div>
+            <div class="full"><label>本地文件完整路径</label><input id="localPath" placeholder="D:\\media\\video.mkv"></div>
+            <div class="full row"><button onclick="createLocalJob()">添加本地任务</button></div>
+          </div>
+        </div>
+        <div class="card section">
+          <div class="section-title">
+            <span>任务列表</span>
+            <span class="badge running">总速率 ${formatSpeed((state.stats || {}).speedBps || 0)}</span>
+          </div>
+          <div class="list">${renderJobList(state.jobs)}</div>
+        </div>
+      `;
+    }
+
+    function renderJobList(jobs) {
+      if (!jobs.length) return `<div class="meta">暂无任务。</div>`;
+      return jobs.map((job) => {
+        const profile = byId(state.profiles, job.profile_id);
+        const logs = Array.isArray(job.logs) ? job.logs.slice().reverse() : [];
+        return `
+          <div class="item">
+            <div class="item-head">
+              <div>
+                <div class="name">${esc(job.file_name)}</div>
+                <div class="meta">${esc(profile?.name || job.profile_id || "-")} · ${esc(job.remote_dir || "/")} · ${esc(job.source_provider || job.type)} · ${esc(job.phase || job.status)}</div>
+              </div>
+              <div class="row">
+                <span class="badge ${esc(job.status)}">${statusName(job.status)}</span>
+                <button onclick="retryJob('${job.id}')">重试</button>
+                <button class="danger" onclick="deleteJob('${job.id}')">删除</button>
+              </div>
+            </div>
+            <div class="progress">
+              <div class="bar"><div class="fill" style="width:${Number(job.percent || 0)}%"></div></div>
+              <span>${Number(job.percent || 0)}%</span>
+              <span class="speed">${formatSpeed(job.speed_bps || 0)}</span>
+            </div>
+            ${job.last_error ? `<div class="meta" style="color:var(--danger); margin-top:8px;">${esc(job.last_error)}</div>` : ""}
+            <details>
+              <summary class="meta">日志（倒序）</summary>
+              <pre>${esc(logs.join("\\n"))}</pre>
+            </details>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function statusName(status) {
+      return ({ queued: "等待", running: "运行", retry: "重试", done: "完成", failed: "失败", cancelled: "取消" }[status] || status || "-");
+    }
+
+    function renderSettings() {
+      const s = state.settings || {};
+      return `
+        <div class="card">
+          <div class="section-title">运行设置</div>
+          <div class="form-grid">
+            <div><label>并发任务数</label><input id="setConcurrency" type="number" min="1" max="16" value="${esc(s.transferConcurrency || 4)}"></div>
+            <div><label>最小磁盘剩余 GB</label><input id="setMinFree" type="number" min="0" value="${esc(s.minFreeSpaceGb || 2)}"></div>
+            <div class="full"><label>下载临时目录</label><input id="setDownloadDir" value="${esc(s.downloadDir || "")}" placeholder="留空使用 sjhl_rewrite/data/downloads"></div>
+            <div><label>每日上传限制 Byte</label><input id="setDailyBytes" type="number" value="${esc(s.dailyUploadLimitBytes || 0)}"></div>
+            <div><label>启用每日限制</label><select id="setDailyEnabled"><option value="false">否</option><option value="true" ${s.dailyUploadLimitEnabled ? "selected" : ""}>是</option></select></div>
+            <div class="full row"><button class="primary" onclick="saveSettings()">保存设置</button></div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function saveProfile() {
+      try {
+        await api("/api/profiles", { method: "POST", body: JSON.stringify({
+          name: $("spName").value,
+          tenant_id: $("spTenantId").value,
+          client_id: $("spClientId").value,
+          client_secret: $("spClientSecret").value,
+          drive_id: $("spDriveId").value,
+          root_path: $("spRootPath").value,
+        })});
+        await loadState();
+      } catch (error) { showError(error.message); }
+    }
+
+    async function deleteProfile(id) {
+      if (!confirm("删除这个 SP 配置？")) return;
+      await api(`/api/profiles/${id}`, { method: "DELETE" });
+      await loadState();
+    }
+
+    async function testProfile(id) {
+      try {
+        await api(`/api/profiles/${id}/test`, { method: "POST", body: "{}" });
+        alert("SP 认证成功");
+      } catch (error) { showError(error.message); }
+    }
+
+    async function saveAccount() {
+      try {
+        await api("/api/115/accounts", { method: "POST", body: JSON.stringify({
+          name: $("aName").value,
+          cookie: $("aCookie").value,
+          access_token: $("aAccessToken").value,
+          refresh_token: $("aRefreshToken").value,
+          user_agent: $("aUa").value,
+        })});
+        await loadState();
+      } catch (error) { showError(error.message); }
+    }
+
+    async function deleteAccount(id) {
+      if (!confirm("删除这个 115 账号？")) return;
+      await api(`/api/115/accounts/${id}`, { method: "DELETE" });
+      await loadState();
+    }
+
+    async function getCloudDriveToken(id) {
+      try {
+        await api(`/api/115/accounts/${id}/clouddrive-token`, { method: "POST", body: "{}" });
+        alert("OpenToken 获取成功");
+        await loadState();
+      } catch (error) { showError(error.message); }
+    }
+
+    async function create115Job() {
+      try {
+        await api("/api/jobs/115", { method: "POST", body: JSON.stringify({
+          profile_id: $("jobProfile").value,
+          account_id: $("jobAccount").value,
+          pickCode: $("jobPickCode").value,
+          fileName: $("jobFileName").value,
+          remoteDir: $("jobRemoteDir").value,
+          size: Number($("jobSize").value || 0),
+        })});
+        await loadState();
+      } catch (error) { showError(error.message); }
+    }
+
+    async function createLocalJob() {
+      try {
+        await api("/api/jobs/local", { method: "POST", body: JSON.stringify({
+          profile_id: $("localProfile").value,
+          filePath: $("localPath").value,
+          remoteDir: $("localRemoteDir").value,
+        })});
+        await loadState();
+      } catch (error) { showError(error.message); }
+    }
+
+    async function startJobs() {
+      await api("/api/jobs/process", { method: "POST", body: "{}" });
+      await loadState();
+    }
+
+    async function stopJobs() {
+      await api("/api/jobs/stop", { method: "POST", body: "{}" });
+      await loadState();
+    }
+
+    async function retryJob(id) {
+      await api(`/api/jobs/${id}/retry`, { method: "POST", body: "{}" });
+      await loadState();
+    }
+
+    async function deleteJob(id) {
+      await api(`/api/jobs/${id}`, { method: "DELETE" });
+      await loadState();
+    }
+
+    async function clearDone() {
+      await api("/api/jobs", { method: "DELETE" });
+      await loadState();
+    }
+
+    async function saveSettings() {
+      await api("/api/settings", { method: "POST", body: JSON.stringify({
+        transferConcurrency: Number($("setConcurrency").value || 4),
+        minFreeSpaceGb: Number($("setMinFree").value || 0),
+        downloadDir: $("setDownloadDir").value,
+        dailyUploadLimitBytes: Number($("setDailyBytes").value || 0),
+        dailyUploadLimitEnabled: $("setDailyEnabled").value === "true",
+      })});
+      await loadState();
+    }
+
+    $("refreshBtn").addEventListener("click", () => loadState());
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) loadState(true);
+    });
+    renderTabs();
+    loadState();
+    setInterval(() => {
+      if (!document.hidden && ["dashboard", "jobs"].includes(currentTab)) loadState(true);
+    }, 3000);
+  </script>
+</body>
+</html>
+

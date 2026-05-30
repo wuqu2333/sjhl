@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SP → OpenList 挂载管理器</title>
+<style>
+  :root {
+    --bg: #f5f5f5; --card: #fff; --border: #e0e0e0; --text: #333; --text2: #666;
+    --primary: #1677ff; --primary-hover: #4096ff; --success: #52c41a; --danger: #ff4d4f;
+    --warning: #faad14; --radius: 6px; --shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .app { max-width:1200px; margin:0 auto; padding:20px; }
+  header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
+  header h1 { font-size:22px; font-weight:600; }
+  .tabs { display:flex; gap:0; margin-bottom:20px; border-bottom:2px solid var(--border); }
+  .tab { padding:10px 24px; cursor:pointer; border:none; background:none; font-size:14px; color:var(--text2); border-bottom:2px solid transparent; margin-bottom:-2px; transition:all .2s; }
+  .tab:hover { color:var(--primary); }
+  .tab.active { color:var(--primary); border-bottom-color:var(--primary); font-weight:500; }
+  .card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; margin-bottom:16px; }
+  .card h3 { font-size:15px; margin-bottom:12px; }
+  .form-group { margin-bottom:12px; }
+  .form-group label { display:block; font-size:13px; color:var(--text2); margin-bottom:4px; font-weight:500; }
+  .form-group input, .form-group select, .form-group textarea { width:100%; padding:7px 10px; border:1px solid var(--border); border-radius:var(--radius); font-size:13px; outline:none; transition:border-color .2s; background:var(--card); color:var(--text); }
+  .form-group input:focus, .form-group select:focus { border-color:var(--primary); }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .btn { display:inline-flex; align-items:center; gap:6px; padding:7px 16px; border-radius:var(--radius); font-size:13px; cursor:pointer; border:1px solid transparent; font-weight:500; transition:all .2s; white-space:nowrap; }
+  .btn-primary { background:var(--primary); color:#fff; border-color:var(--primary); }
+  .btn-primary:hover { background:var(--primary-hover); }
+  .btn-outline { background:var(--card); color:var(--text); border-color:var(--border); }
+  .btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+  .btn-danger { background:var(--danger); color:#fff; border-color:var(--danger); }
+  .btn-danger:hover { opacity:.85; }
+  .btn-sm { padding:4px 10px; font-size:12px; }
+  .btn:disabled { opacity:.5; cursor:not-allowed; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); }
+  th { font-weight:500; color:var(--text2); font-size:12px; background:#fafafa; }
+  tr:hover td { background:#fafafa; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:500; }
+  .badge-success { background:#f6ffed; color:var(--success); border:1px solid #b7eb8f; }
+  .badge-danger { background:#fff2f0; color:var(--danger); border:1px solid #ffccc7; }
+  .badge-warning { background:#fffbe6; color:#d48806; border:1px solid #ffe58f; }
+  .badge-default { background:#fafafa; color:var(--text2); border:1px solid var(--border); }
+  .flex { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .flex-between { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+  .mt-12 { margin-top:12px; }
+  .mb-12 { margin-bottom:12px; }
+  .text-sm { font-size:12px; color:var(--text2); }
+  .text-danger { color:var(--danger); }
+  .text-success { color:var(--success); }
+  .empty { text-align:center; padding:40px 20px; color:var(--text2); }
+  .toast { position:fixed; top:20px; right:20px; z-index:9999; padding:10px 20px; border-radius:var(--radius); font-size:13px; box-shadow:0 2px 8px rgba(0,0,0,.15); animation:slideIn .3s ease; max-width:400px; }
+  .toast-success { background:#f6ffed; border:1px solid #b7eb8f; color:#389e0d; }
+  .toast-error { background:#fff2f0; border:1px solid #ffccc7; color:#cf1322; }
+  @keyframes slideIn { from { transform:translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+  .loading { text-align:center; padding:20px; color:var(--text2); }
+  .spinner { display:inline-block; width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin .8s linear infinite; margin-right:6px; vertical-align:middle; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  pre { background:#fafafa; padding:12px; border-radius:var(--radius); font-size:12px; overflow-x:auto; max-height:300px; border:1px solid var(--border); white-space:pre-wrap; word-break:break-all; }
+  .site-card { border:1px solid var(--border); border-radius:var(--radius); margin-bottom:12px; overflow:hidden; }
+  .site-card-header { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#fafafa; cursor:pointer; user-select:none; }
+  .site-card-header:hover { background:#f0f0f0; }
+  .site-card-body { padding:0 14px; max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .site-card-body.open { max-height:800px; padding:10px 14px; overflow-y:auto; }
+  .drive-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f0f0f0; }
+  .drive-row:last-child { border-bottom:none; }
+  .checkbox-label { display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; }
+  .checkbox-label input[type=checkbox] { width:16px; height:16px; cursor:pointer; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:20px; }
+  .stat-card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; text-align:center; }
+  .stat-card .num { font-size:28px; font-weight:700; color:var(--primary); }
+  .stat-card .label { font-size:12px; color:var(--text2); margin-top:4px; }
+  .ol-status { display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:3px 10px; border-radius:10px; }
+  .ol-status.on { background:#f6ffed; color:var(--success); }
+  .ol-status.off { background:#fff2f0; color:var(--danger); }
+  @media (max-width:600px) {
+    .form-row { grid-template-columns:1fr; }
+    .app { padding:12px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>SP → OpenList 自动挂载管理器</h1>
+    <div class="flex">
+      <span id="olStatus" class="ol-status off">OpenList: 未连接</span>
+    </div>
+  </header>
+
+  <!-- 统计 -->
+  <div class="stats">
+    <div class="stat-card"><div class="num" id="statConnections">0</div><div class="label">SP 租户连接</div></div>
+    <div class="stat-card"><div class="num" id="statMounts">0</div><div class="label">已挂载文档库</div></div>
+    <div class="stat-card"><div class="num" id="statOpenListStorage">-</div><div class="label">OpenList 中存储数</div></div>
+  </div>
+
+  <!-- 标签 -->
+  <div class="tabs">
+    <button class="tab active" data-tab="settings">OpenList 设置</button>
+    <button class="tab" data-tab="connections">SP 租户连接</button>
+    <button class="tab" data-tab="discover">站点发现</button>
+    <button class="tab" data-tab="mounts">挂载管理</button>
+  </div>
+
+  <!-- ===== OpenList 设置 ===== -->
+  <div id="tab-settings" class="tab-content">
+    <div class="card">
+      <h3>OpenList 连接设置</h3>
+      <div class="form-group"><label>OpenList 地址</label><input id="olUrl" placeholder="例如: http://your-server:5244"></div>
+      <div class="form-group"><label>API Key</label><input id="olApiKey" type="password" placeholder="OpenList 后台生成的 API Token"></div>
+      <div class="flex mt-12">
+        <button class="btn btn-primary" onclick="saveSettings()">保存设置</button>
+        <button class="btn btn-outline" id="btnTest" onclick="testOpenList()">测试连接</button>
+      </div>
+      <div id="testResult" class="mt-12" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- ===== SP 租户连接 ===== -->
+  <div id="tab-connections" class="tab-content" style="display:none;">
+    <div class="flex-between mb-12">
+      <h3 style="font-size:15px;">SP 租户连接</h3>
+      <button class="btn btn-primary" onclick="showConnectionForm()">+ 添加连接</button>
+    </div>
+    <div id="connectionsList"></div>
+    <div id="connectionForm" class="card" style="display:none;">
+      <h3 id="connFormTitle">添加租户连接</h3>
+      <input type="hidden" id="connId">
+      <div class="form-row">
+        <div class="form-group"><label>连接名称</label><input id="connName" placeholder="例如: 公司主租户"></div>
+        <div class="form-group"><label>区域</label><select id="connRegion"><option value="cn">世纪互联 (中国)</option><option value="global">国际版 (Global)</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Tenant ID</label><input id="connTenantId" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx 或 common"></div>
+        <div class="form-group"><label>Client ID</label><input id="connClientId" placeholder="Azure AD 应用的 Application ID"></div>
+      </div>
+      <div class="form-group"><label>Client Secret</label><input id="connClientSecret" type="password" placeholder="留空则保留原有值"></div>
+      <div class="flex mt-12">
+        <button class="btn btn-primary" onclick="saveConnection()">保存</button>
+        <button class="btn btn-outline" onclick="hideConnectionForm()">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 站点发现 ===== -->
+  <div id="tab-discover" class="tab-content" style="display:none;">
+    <div class="flex-between mb-12">
+      <h3 style="font-size:15px;">发现 SharePoint 站点与文档库</h3>
+      <div class="flex">
+        <select id="discoverConn" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;">
+          <option value="">-- 选择连接 --</option>
+        </select>
+        <button class="btn btn-primary" onclick="startDiscovery()">发现站点</button>
+        <button class="btn btn-outline" onclick="showMountByUrl()">按 URL 挂载</button>
+      </div>
+    </div>
+    <div id="mountByUrlForm" class="card" style="display:none;">
+      <h3>按站点 URL 挂载到 OpenList</h3>
+      <div class="form-group"><label>SharePoint 站点 URL</label><input id="siteUrl" placeholder="https://tenant.sharepoint.cn/sites/mysite"></div>
+      <div class="flex mt-12">
+        <button class="btn btn-primary" onclick="mountByUrl()">查询并挂载</button>
+        <button class="btn btn-outline" onclick="document.getElementById('mountByUrlForm').style.display='none'">取消</button>
+      </div>
+    </div>
+    <div id="discoveryResult"></div>
+    <div id="discoveryActions" style="display:none;" class="mt-12">
+      <button class="btn btn-primary" onclick="batchMount()">挂载选中的文档库到 OpenList</button>
+      <button class="btn btn-outline" onclick="autoMountAll()">一键全量挂载到 OpenList</button>
+    </div>
+  </div>
+
+  <!-- ===== 挂载管理 ===== -->
+  <div id="tab-mounts" class="tab-content" style="display:none;">
+    <div class="flex-between mb-12">
+      <h3 style="font-size:15px;">已挂载的文档库</h3>
+      <div class="flex">
+        <button class="btn btn-outline btn-sm" onclick="refreshOpenListStorage()">刷新 OpenList 状态</button>
+        <button class="btn btn-danger btn-sm" onclick="clearAllMounts()">清空记录</button>
+      </div>
+    </div>
+    <div id="mountsList"></div>
+    <div class="card mt-12" id="olStoragePanel" style="display:none;">
+      <h3>OpenList 中已挂载的存储</h3>
+      <div id="olStorageList"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+var API = '';
+var connections = [];
+var mounts = [];
+var discoveredSites = [];
+var olStorageItems = [];
+
+function toast(m, t) { t = t || 'success'; var e = document.createElement('div'); e.className = 'toast toast-' + t; e.textContent = m; document.getElementById('toastContainer').appendChild(e); setTimeout(function() { e.remove(); }, 3500); }
+
+async function api(method, path, body) {
+  var opts = { method: method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  var res = await fetch(API + path, opts);
+  var data = await res.json();
+  if (!res.ok) throw new Error(data.error || data.detail || 'HTTP ' + res.status);
+  return data;
+}
+
+function escapeHtml(s) { return s ? String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : ''; }
+function formatTime(iso) { return iso ? iso.replace('T', ' ').substring(0, 19) : '-'; }
+
+// ---- Tabs ----
+document.querySelectorAll('.tab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(function(x) { x.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(x) { x.style.display = 'none'; });
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).style.display = '';
+    if (t.dataset.tab === 'settings') refreshSettings();
+    if (t.dataset.tab === 'connections') refreshConnections();
+    if (t.dataset.tab === 'discover') refreshDiscoverSelect();
+    if (t.dataset.tab === 'mounts') { refreshMounts(); refreshOpenListStorage(); }
+    localStorage.setItem('oplist-mounter-tab', t.dataset.tab);
+  });
+});
+
+// ===== OpenList 设置 =====
+async function refreshSettings() {
+  try {
+    var s = await api('GET', '/api/settings');
+    document.getElementById('olUrl').value = s.openListUrl || '';
+    document.getElementById('olApiKey').value = '';
+    updateOlStatus(!!s.hasApiKey);
+  } catch(e) { updateOlStatus(false); }
+}
+
+async function saveSettings() {
+  try {
+    await api('POST', '/api/settings', {
+      openListUrl: document.getElementById('olUrl').value,
+      openListApiKey: document.getElementById('olApiKey').value,
+    });
+    toast('设置已保存');
+    updateOlStatus(true);
+  } catch(e) { toast('保存失败: ' + e.message, 'error'); }
+}
+
+async function testOpenList() {
+  var btn = document.getElementById('btnTest');
+  btn.disabled = true; btn.textContent = '测试中...';
+  var el = document.getElementById('testResult');
+  try {
+    var r = await api('POST', '/api/settings/test-openlist');
+    el.style.display = ''; el.innerHTML = '<span class="text-success">连接成功！OpenList 中已有 ' + r.storage_count + ' 个存储。</span>';
+    updateOlStatus(true);
+    document.getElementById('statOpenListStorage').textContent = r.storage_count;
+  } catch(e) {
+    el.style.display = ''; el.innerHTML = '<span class="text-danger">连接失败: ' + escapeHtml(e.message) + '</span>';
+    updateOlStatus(false);
+  } finally {
+    btn.disabled = false; btn.textContent = '测试连接';
+  }
+}
+
+function updateOlStatus(on) {
+  var el = document.getElementById('olStatus');
+  el.className = 'ol-status ' + (on ? 'on' : 'off');
+  el.textContent = 'OpenList: ' + (on ? '已配置' : '未连接');
+}
+
+// ===== SP 连接 =====
+async function refreshConnections() {
+  try { connections = await api('GET', '/api/connections'); renderConnections(); } catch(e) {}
+}
+
+function renderConnections() {
+  var el = document.getElementById('connectionsList');
+  if (!connections.length) { el.innerHTML = '<div class="empty"><p>还没有添加 SP 租户连接</p></div>'; refreshStats(); return; }
+  el.innerHTML = '<table><thead><tr><th>名称 / Tenant</th><th>区域</th><th>Token</th><th>更新时间</th><th>操作</th></tr></thead><tbody>' +
+    connections.map(function(c) {
+      return '<tr><td><strong>' + escapeHtml(c.name) + '</strong><br><span class="text-sm">' + escapeHtml(c.tenantId) + '</span></td>' +
+        '<td><span class="badge badge-default">' + (c.region === 'cn' ? '世纪互联' : '国际版') + '</span></td>' +
+        '<td>' + (c.hasRefreshToken ? '<span class="badge badge-success">有Token</span>' : '<span class="badge badge-warning">无Token</span>') + '</td>' +
+        '<td class="text-sm">' + formatTime(c.updatedAt) + '</td>' +
+        '<td><button class="btn btn-outline btn-sm" onclick="editConn(\'' + c.id + '\')">编辑</button> ' +
+        '<button class="btn btn-outline btn-sm" onclick="testConn(\'' + c.id + '\')" style="color:var(--success)">测试</button> ' +
+        '<button class="btn btn-outline btn-sm" onclick="getRefreshToken(\'' + c.id + '\')" style="color:var(--warning)">获取Token</button> ' +
+        '<button class="btn btn-outline btn-sm" onclick="delConn(\'' + c.id + '\')" style="color:var(--danger)">删除</button></td></tr>';
+    }).join('') + '</tbody></table>';
+  refreshStats();
+}
+
+function showConnectionForm(conn) {
+  var f = document.getElementById('connectionForm'); f.style.display = '';
+  if (conn) {
+    document.getElementById('connFormTitle').textContent = '编辑租户连接';
+    document.getElementById('connId').value = conn.id;
+    document.getElementById('connName').value = conn.name || '';
+    document.getElementById('connRegion').value = conn.region || 'cn';
+    document.getElementById('connTenantId').value = conn.tenantId || '';
+    document.getElementById('connClientId').value = conn.clientId || '';
+    document.getElementById('connClientSecret').value = '';
+  } else {
+    document.getElementById('connFormTitle').textContent = '添加租户连接';
+    document.getElementById('connId').value = '';
+    document.getElementById('connName').value = '';
+    document.getElementById('connRegion').value = 'cn';
+    document.getElementById('connTenantId').value = '';
+    document.getElementById('connClientId').value = '';
+    document.getElementById('connClientSecret').value = '';
+  }
+  f.scrollIntoView({behavior:'smooth'});
+}
+function hideConnectionForm() { document.getElementById('connectionForm').style.display = 'none'; }
+function editConn(id) { var c = connections.find(function(x){return x.id===id}); if (c) showConnectionForm(c); }
+
+async function saveConnection() {
+  var id = document.getElementById('connId').value;
+  var body = {
+    id: id || undefined, name: document.getElementById('connName').value,
+    region: document.getElementById('connRegion').value, tenantId: document.getElementById('connTenantId').value,
+    clientId: document.getElementById('connClientId').value, clientSecret: document.getElementById('connClientSecret').value,
+  };
+  if (!body.tenantId || !body.clientId) { toast('Tenant ID 和 Client ID 必填', 'error'); return; }
+  try { await api('POST', '/api/connections', body); hideConnectionForm(); refreshConnections(); toast(id ? '连接已更新' : '连接已创建'); }
+  catch(e) { toast('保存失败: ' + e.message, 'error'); }
+}
+
+async function delConn(id) {
+  if (!confirm('确定删除此连接？')) return;
+  try { await api('DELETE', '/api/connections/' + id); refreshConnections(); toast('已删除'); }
+  catch(e) { toast('删除失败: ' + e.message, 'error'); }
+}
+
+async function testConn(id) {
+  try { await api('GET', '/api/connections/' + id + '/discover?search='); toast('连接测试成功'); }
+  catch(e) { toast('连接测试失败: ' + e.message, 'error'); }
+}
+
+var pollingTimer = null;
+
+async function getRefreshToken(id) {
+  try {
+    var data = await api('POST', '/api/connections/' + id + '/device-code');
+    showDeviceCodeModal(id, data);
+  } catch(e) { toast('请求失败: ' + e.message, 'error'); }
+}
+
+function showDeviceCodeModal(id, data) {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9990;display:flex;align-items:center;justify-content:center';
+  overlay.id = 'dcOverlay';
+  overlay.innerHTML = '<div class="card" style="position:relative;max-width:420px;width:90%;z-index:9991">' +
+    '<h3>设备代码授权</h3>' +
+    '<p class="text-sm mb-12">请在任意设备上打开以下网址，输入验证码完成登录：</p>' +
+    '<div style="text-align:center;margin:16px 0"><a href="' + escapeHtml(data.verification_uri) + '" target="_blank" style="font-size:14px;color:var(--primary)">' + escapeHtml(data.verification_uri) + '</a></div>' +
+    '<div style="text-align:center;font-size:32px;font-weight:700;letter-spacing:4px;padding:16px;background:#f5f5f5;border-radius:6px;margin:12px 0;user-select:all">' + escapeHtml(data.user_code) + '</div>' +
+    '<p id="dcStatus" class="text-sm" style="text-align:center">等待授权... <span class="spinner"></span></p>' +
+    '<div class="flex mt-12" style="justify-content:flex-end">' +
+      '<button class="btn btn-outline btn-sm" onclick="cancelDeviceCode(\'' + id + '\')">取消</button>' +
+    '</div></div>';
+  document.body.appendChild(overlay);
+
+  pollDeviceCode(id);
+}
+
+async function pollDeviceCode(id) {
+  try {
+    var r = await api('POST', '/api/connections/' + id + '/device-code/poll');
+    if (r.status === 'done') {
+      document.getElementById('dcStatus').innerHTML = '<span class="text-success">授权成功！</span>';
+      setTimeout(function() { closeDeviceCode(); refreshConnections(); }, 1500);
+      return;
+    }
+    if (r.status === 'pending') {
+      pollingTimer = setTimeout(function() { pollDeviceCode(id); }, r.slow_down ? 7000 : 4000);
+    }
+  } catch(e) {
+    document.getElementById('dcStatus').innerHTML = '<span class="text-danger">' + escapeHtml(e.message) + '</span>';
+    setTimeout(function() { closeDeviceCode(); }, 3000);
+  }
+}
+
+async function cancelDeviceCode(id) {
+  if (pollingTimer) { clearTimeout(pollingTimer); pollingTimer = null; }
+  try { await api('DELETE', '/api/connections/' + id + '/device-code'); } catch(e) {}
+  closeDeviceCode();
+}
+
+function closeDeviceCode() {
+  if (pollingTimer) { clearTimeout(pollingTimer); pollingTimer = null; }
+  var el = document.getElementById('dcOverlay');
+  if (el) el.remove();
+}
+
+// ===== 站点发现 =====
+function refreshDiscoverSelect() {
+  document.getElementById('discoverConn').innerHTML = '<option value="">-- 选择连接 --</option>' +
+    connections.map(function(c){return '<option value="'+c.id+'">'+escapeHtml(c.name)+'</option>';}).join('');
+}
+
+async function startDiscovery() {
+  var connId = document.getElementById('discoverConn').value;
+  if (!connId) { toast('请先选择租户连接', 'error'); return; }
+  var el = document.getElementById('discoveryResult');
+  el.innerHTML = '<div class="loading"><span class="spinner"></span>正在发现 SharePoint 站点...</div>';
+  try {
+    var data = await api('GET', '/api/connections/' + connId + '/discover?search=*');
+    if (!data.sites || !data.sites.length) { el.innerHTML = '<div class="empty"><p>未发现任何站点</p></div>'; document.getElementById('discoveryActions').style.display='none'; return; }
+    discoveredSites = data.sites.map(function(s){return {site:s, drives:[], expanded:false, selected:{}};});
+    document.getElementById('discoveryActions').style.display = '';
+    renderSites();
+    toast('发现 ' + data.sites.length + ' 个站点');
+  } catch(e) { el.innerHTML = '<div class="empty"><p class="text-danger">发现失败: ' + escapeHtml(e.message) + '</p></div>'; }
+}
+
+function showMountByUrl() { document.getElementById('mountByUrlForm').style.display = ''; }
+
+async function mountByUrl() {
+  var connId = document.getElementById('discoverConn').value;
+  var url = document.getElementById('siteUrl').value.trim();
+  if (!connId) { toast('请先选择连接', 'error'); return; }
+  if (!url) { toast('请输入站点 URL', 'error'); return; }
+  try {
+    var data = await api('POST', '/api/connections/' + connId + '/mount-by-url', {siteUrl: url});
+    document.getElementById('mountByUrlForm').style.display = 'none';
+    toast('挂载完成: ' + data.mounts.length + ' 个文档库');
+    refreshMounts();
+  } catch(e) { toast('挂载失败: ' + e.message, 'error'); }
+}
+
+function renderSites() {
+  document.getElementById('discoveryResult').innerHTML = discoveredSites.map(function(item, i) {
+    var s = item.site;
+    return '<div class="site-card"><div class="site-card-header" onclick="toggleSite(' + i + ')">' +
+      '<div><strong>' + escapeHtml(s.displayName || s.name || 'Site') + '</strong> <span class="text-sm">' + escapeHtml(s.webUrl || '') + '</span></div>' +
+      '<span id="arrow' + i + '">▶</span></div>' +
+      '<div class="site-card-body" id="body' + i + '"><div id="drives' + i + '" class="loading"><span class="spinner"></span>加载中...</div></div></div>';
+  }).join('');
+}
+
+async function toggleSite(i) {
+  var item = discoveredSites[i];
+  var body = document.getElementById('body' + i);
+  var arrow = document.getElementById('arrow' + i);
+  if (item.expanded) { body.classList.remove('open'); arrow.textContent = '▶'; item.expanded = false; return; }
+  body.classList.add('open'); arrow.textContent = '▼'; item.expanded = true;
+  if (!item.drives.length) {
+    var connId = document.getElementById('discoverConn').value;
+    try { var d = await api('GET', '/api/connections/' + connId + '/drives?site_id=' + encodeURIComponent(item.site.id)); item.drives = d.drives || []; }
+    catch(e) { item.drives = []; }
+    renderDrives(i);
+  }
+}
+
+function renderDrives(i) {
+  var item = discoveredSites[i];
+  var el = document.getElementById('drives' + i);
+  if (!item.drives.length) { el.innerHTML = '<p class="text-sm">该站点没有文档库</p>'; return; }
+  el.innerHTML = item.drives.map(function(d) {
+    return '<div class="drive-row"><label class="checkbox-label"><input type="checkbox" ' +
+      (item.selected[d.id] ? 'checked' : '') + ' onchange="discoveredSites[' + i + '].selected[\'' + d.id + '\']=this.checked">' +
+      '<span><strong>' + escapeHtml(d.name || 'Documents') + '</strong>' +
+      (d.webUrl ? ' <a href="' + escapeHtml(d.webUrl) + '" target="_blank" class="text-sm">打开</a>' : '') + '</span></label>' +
+      '<span class="text-sm">' + (d.driveType || '') + '</span></div>';
+  }).join('');
+}
+
+function getSelected() {
+  var items = [];
+  discoveredSites.forEach(function(item) { item.drives.forEach(function(d) { if (item.selected[d.id]) items.push({site:item.site, drive:d}); }); });
+  return items;
+}
+
+async function batchMount() {
+  var connId = document.getElementById('discoverConn').value;
+  var items = getSelected();
+  if (!items.length) { toast('请至少选择一个文档库', 'error'); return; }
+  var el = document.getElementById('discoveryResult');
+  try {
+    el.innerHTML = '<div class="loading"><span class="spinner"></span>正在调用 OpenList API 挂载...</div>';
+    var data = await api('POST', '/api/mounts/batch', {connectionId: connId, items: items});
+    var errs = data.errors || [];
+    if (errs.length) toast('挂载完成: ' + data.count + ' 个，失败 ' + errs.length + ' 个', 'error');
+    else toast('成功挂载 ' + data.count + ' 个文档库到 OpenList');
+    refreshMounts();
+  } catch(e) { toast('挂载失败: ' + e.message, 'error'); }
+}
+
+async function autoMountAll() {
+  var connId = document.getElementById('discoverConn').value;
+  if (!connId) { toast('请先选择连接', 'error'); return; }
+  if (!confirm('将发现所有 SP 站点的全部文档库并调用 OpenList API 挂载。\n此操作可能需要较长时间，确定继续？')) return;
+  var el = document.getElementById('discoveryResult');
+  el.innerHTML = '<div class="loading"><span class="spinner"></span>正在全量发现并挂载到 OpenList...</div>';
+  try {
+    var data = await api('POST', '/api/mounts/auto-mount-all', {connectionId: connId});
+    toast('完成: ' + data.sites + ' 个站点, ' + data.count + ' 个挂载');
+    refreshMounts();
+    startDiscovery();
+  } catch(e) { toast('失败: ' + e.message, 'error'); }
+}
+
+// ===== 挂载管理 =====
+async function refreshMounts() {
+  try { mounts = await api('GET', '/api/mounts'); renderMounts(); refreshStats(); } catch(e) {}
+}
+
+function renderMounts() {
+  var el = document.getElementById('mountsList');
+  if (!mounts.length) { el.innerHTML = '<div class="empty"><p>暂无挂载记录</p><p class="text-sm">在「站点发现」中选择文档库挂载到 OpenList</p></div>'; return; }
+  el.innerHTML = '<table><thead><tr><th>挂载路径</th><th>站点</th><th>文档库</th><th>挂载时间</th><th>操作</th></tr></thead><tbody>' +
+    mounts.map(function(m) {
+      return '<tr><td><code>' + escapeHtml(m.mountPath || '') + '</code></td>' +
+        '<td>' + escapeHtml(m.siteName || '') + '</td><td>' + escapeHtml(m.driveName || '') + '</td>' +
+        '<td class="text-sm">' + formatTime(m.mountedAt) + '</td>' +
+        '<td><button class="btn btn-outline btn-sm" onclick="delMount(\'' + m.id + '\')" style="color:var(--danger)">删除</button></td></tr>';
+    }).join('') + '</tbody></table>';
+}
+
+async function delMount(id) { try { await api('DELETE', '/api/mounts/' + id); refreshMounts(); toast('已删除'); } catch(e) { toast('删除失败: ' + e.message, 'error'); } }
+async function clearAllMounts() { if (!confirm('确定清空所有挂载记录？（不会删除 OpenList 中的存储）')) return; try { await api('DELETE', '/api/mounts'); refreshMounts(); toast('已清空'); } catch(e) { toast('失败: ' + e.message, 'error'); } }
+
+async function refreshOpenListStorage() {
+  try {
+    var data = await api('GET', '/api/openlist/storage');
+    olStorageItems = data.storage || [];
+    renderOlStorage();
+    document.getElementById('statOpenListStorage').textContent = olStorageItems.length;
+    document.getElementById('olStoragePanel').style.display = '';
+  } catch(e) {
+    document.getElementById('olStoragePanel').style.display = 'none';
+    document.getElementById('statOpenListStorage').textContent = '?';
+  }
+}
+
+function renderOlStorage() {
+  var el = document.getElementById('olStorageList');
+  if (!olStorageItems.length) { el.innerHTML = '<p class="text-sm">暂无存储</p>'; return; }
+  el.innerHTML = '<table><thead><tr><th>挂载路径</th><th>驱动</th><th>状态</th></tr></thead><tbody>' +
+    olStorageItems.map(function(s) {
+      return '<tr><td><code>' + escapeHtml(s.mount_path || '') + '</code></td>' +
+        '<td><span class="badge badge-default">' + escapeHtml(s.driver || '') + '</span></td>' +
+        '<td><span class="badge ' + (s.status === 'work' ? 'badge-success' : 'badge-warning') + '">' + escapeHtml(s.status || '') + '</span></td></tr>';
+    }).join('') + '</tbody></table>';
+}
+
+// ===== 统计 =====
+function refreshStats() {
+  document.getElementById('statConnections').textContent = connections.length;
+  document.getElementById('statMounts').textContent = mounts.length;
+}
+
+// ===== 初始化 =====
+async function init() {
+  var savedTab = localStorage.getItem('oplist-mounter-tab') || 'settings';
+  document.querySelectorAll('.tab').forEach(function(t) { if (t.dataset.tab === savedTab) t.click(); });
+  await refreshSettings();
+  await refreshConnections();
+  await refreshMounts();
+  try { await refreshOpenListStorage(); } catch(e) {}
+}
+init();
+</script>
+</body>
+</html>

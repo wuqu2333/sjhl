@@ -1,0 +1,91 @@
+[12:21:33] ============================================================
+[12:21:33]   SPEED TEST: 4x LOCAL upload (600.0 MiB each)
+[12:21:33]   Chunk: 40 MiB  |  Target: SharePoint 世纪互联
+[12:21:33] ============================================================
+[12:21:33] Test files ready: 4 x 600.0 MiB in C:\Users\USER570019\Desktop\sjhl\backend\_testdata
+[12:21:33] Auth...
+[12:21:34] Token OK
+[12:21:35] Session #1 created: 媒体库/Media/电视剧/综艺/最强大脑 (2014)/Season 1/_speedtest/test_0.bin
+[12:21:35] Session #2 created: 媒体库/Media/电视剧/综艺/最强大脑 (2014)/Season 1/_speedtest/test_1.bin
+[12:21:36] Session #3 created: 媒体库/Media/电视剧/综艺/最强大脑 (2014)/Season 1/_speedtest/test_2.bin
+[12:21:36] Session #4 created: 媒体库/Media/电视剧/综艺/最强大脑 (2014)/Season 1/_speedtest/test_3.bin
+[12:21:36] 
+Starting 4 concurrent uploads...
+
+[12:21:39]   #2 chunk 1/15  40.0 MiB/600.0 MiB  3.2s  12.7 MiB/s
+[12:21:40]   #4 chunk 1/15  40.0 MiB/600.0 MiB  3.9s  10.2 MiB/s
+[12:21:47]   #2 chunk 2/15  80.0 MiB/600.0 MiB  8.1s  4.9 MiB/s
+[12:21:55]   #3 chunk 1/15  40.0 MiB/600.0 MiB  18.8s  2.1 MiB/s
+[12:21:56]   #1 chunk 1/15  40.0 MiB/600.0 MiB  20.2s  2.0 MiB/s
+[12:22:07]   #2 chunk 3/15  120.0 MiB/600.0 MiB  19.8s  2.0 MiB/s
+[12:22:13]   #4 chunk 2/15  80.0 MiB/600.0 MiB  32.6s  1.2 MiB/s
+[12:22:17]   #3 chunk 2/15  80.0 MiB/600.0 MiB  21.7s  1.8 MiB/s
+[12:22:17]   #4 chunk 3/15  120.0 MiB/600.0 MiB  4.5s  8.9 MiB/s
+[12:22:19]   #2 chunk 4/15  160.0 MiB/600.0 MiB  11.8s  3.4 MiB/s
+[12:22:20]   #1 chunk 2/15  80.0 MiB/600.0 MiB  23.4s  1.7 MiB/s
+[12:22:21]   #4 chunk 4/15  160.0 MiB/600.0 MiB  3.5s  11.5 MiB/s
+[12:22:22]   #3 chunk 3/15  120.0 MiB/600.0 MiB  5.7s  7.0 MiB/s
+[12:22:26]   #2 chunk 5/15  200.0 MiB/600.0 MiB  6.4s  6.2 MiB/s
+[12:22:30]   #1 chunk 3/15  120.0 MiB/600.0 MiB  10.7s  3.8 MiB/s
+[12:22:34]   #4 chunk 5/15  200.0 MiB/600.0 MiB  13.3s  3.0 MiB/s
+[12:22:40]   #2 chunk 6/15  240.0 MiB/600.0 MiB  14.8s  2.7 MiB/s
+[12:22:45]   #3 chunk 4/15  160.0 MiB/600.0 MiB  22.2s  1.8 MiB/s
+[12:22:47]   #1 chunk 4/15  160.0 MiB/600.0 MiB  16.5s  2.4 MiB/s
+[12:22:47]   #4 chunk 6/15  240.0 MiB/600.0 MiB  13.3s  3.0 MiB/s
+[12:22:48]   #2 chunk 7/15  280.0 MiB/600.0 MiB  8.0s  5.0 MiB/s
+[12:22:49]   #3 chunk 5/15  200.0 MiB/600.0 MiB  4.2s  9.5 MiB/s
+[12:22:51]   #1 chunk 5/15  200.0 MiB/600.0 MiB  4.0s  10.0 MiB/s
+[12:22:53]   #4 chunk 7/15  280.0 MiB/600.0 MiB  5.8s  6.9 MiB/s
+[12:22:58]   #2 chunk 8/15  320.0 MiB/600.0 MiB  9.3s  4.3 MiB/s
+[12:22:58]   #3 chunk 6/15  240.0 MiB/600.0 MiB  9.1s  4.4 MiB/s
+[12:22:58]   #1 chunk 6/15  240.0 MiB/600.0 MiB  7.2s  5.6 MiB/s
+[12:22:59]   #4 chunk 8/15  320.0 MiB/600.0 MiB  5.9s  6.8 MiB/s
+[12:23:01]   #2 chunk 9/15  360.0 MiB/600.0 MiB  3.5s  11.5 MiB/s
+[12:23:02]   #4 chunk 9/15  360.0 MiB/600.0 MiB  2.8s  14.4 MiB/s
+[12:23:02]   #1 chunk 7/15  280.0 MiB/600.0 MiB  3.8s  10.6 MiB/s
+[12:23:03]   #3 chunk 7/15  280.0 MiB/600.0 MiB  5.3s  7.5 MiB/s
+[12:23:11]   #1 chunk 8/15  320.0 MiB/600.0 MiB  8.8s  4.6 MiB/s
+[12:23:11]   #4 chunk 10/15  400.0 MiB/600.0 MiB  9.1s  4.4 MiB/s
+[12:23:16]   #3 chunk 8/15  320.0 MiB/600.0 MiB  12.6s  3.2 MiB/s
+[12:23:16]   #2 chunk 10/15  400.0 MiB/600.0 MiB  14.7s  2.7 MiB/s
+[12:23:20]   #4 chunk 11/15  440.0 MiB/600.0 MiB  8.5s  4.7 MiB/s
+[12:23:24]   #3 chunk 9/15  360.0 MiB/600.0 MiB  8.4s  4.8 MiB/s
+[12:23:25]   #2 chunk 11/15  440.0 MiB/600.0 MiB  9.4s  4.3 MiB/s
+[12:23:27]   #1 chunk 9/15  360.0 MiB/600.0 MiB  16.2s  2.5 MiB/s
+[12:23:38]   #4 chunk 12/15  480.0 MiB/600.0 MiB  18.1s  2.2 MiB/s
+[12:23:41]   #2 chunk 12/15  480.0 MiB/600.0 MiB  15.8s  2.5 MiB/s
+[12:23:55]   #1 chunk 10/15  400.0 MiB/600.0 MiB  28.0s  1.4 MiB/s
+[12:23:56]   #4 chunk 13/15  520.0 MiB/600.0 MiB  18.0s  2.2 MiB/s
+[12:23:58]   #2 chunk 13/15  520.0 MiB/600.0 MiB  16.9s  2.4 MiB/s
+[12:24:00]   #3 chunk 10/15  400.0 MiB/600.0 MiB  35.3s  1.1 MiB/s
+[12:24:05]   #4 chunk 14/15  560.0 MiB/600.0 MiB  9.0s  4.5 MiB/s
+[12:24:09]   #2 chunk 14/15  560.0 MiB/600.0 MiB  10.5s  3.8 MiB/s
+[12:24:09]   #3 chunk 11/15  440.0 MiB/600.0 MiB  9.1s  4.4 MiB/s
+[12:24:09]   #1 chunk 11/15  440.0 MiB/600.0 MiB  14.2s  2.8 MiB/s
+[12:24:17]   #4 chunk 15/15  600.0 MiB/600.0 MiB  11.9s  3.4 MiB/s
+[12:24:17]   #1 chunk 12/15  480.0 MiB/600.0 MiB  7.7s  5.2 MiB/s
+[12:24:18]   #3 chunk 12/15  480.0 MiB/600.0 MiB  8.7s  4.6 MiB/s
+[12:24:21]   #2 chunk 15/15  600.0 MiB/600.0 MiB  12.1s  3.3 MiB/s
+[12:24:22]   #1 chunk 13/15  520.0 MiB/600.0 MiB  5.3s  7.5 MiB/s
+[12:24:26]   #3 chunk 13/15  520.0 MiB/600.0 MiB  8.7s  4.6 MiB/s
+[12:24:42]   #3 chunk 14/15  560.0 MiB/600.0 MiB  15.7s  2.5 MiB/s
+[12:25:11]   #1 chunk 14/15  560.0 MiB/600.0 MiB  48.3s  0.8 MiB/s
+[12:25:18]   #3 chunk 15/15  600.0 MiB/600.0 MiB  35.8s  1.1 MiB/s
+[12:25:26]   #1 chunk 15/15  600.0 MiB/600.0 MiB  15.1s  2.6 MiB/s
+[12:25:26] 
+============================================================
+[12:25:26]   RESULTS
+[12:25:26] ============================================================
+[12:25:26]   testfile_0.bin       600.0 MiB  avg: 2.6 MiB/s  min: 0.8 MiB/s  max:10.6 MiB/s  (15 chunks)
+[12:25:26]   testfile_1.bin       600.0 MiB  avg: 3.6 MiB/s  min: 2.0 MiB/s  max:12.7 MiB/s  (15 chunks)
+[12:25:26]   testfile_2.bin       600.0 MiB  avg: 2.7 MiB/s  min: 1.1 MiB/s  max: 9.5 MiB/s  (15 chunks)
+[12:25:26]   testfile_3.bin       600.0 MiB  avg: 3.7 MiB/s  min: 1.2 MiB/s  max:14.4 MiB/s  (15 chunks)
+[12:25:26] 
+  Concurrent uploads:  4
+[12:25:26]   File size (each):    600.0 MiB
+[12:25:26]   Chunk size:          40.0 MiB
+[12:25:26]   Total uploaded:      2400.0 MiB
+[12:25:26]   Wall time:           229.8s
+[12:25:26]   Combined throughput:  10.4 MiB/s
+[12:25:26]   Per-file speed range: 2.6 MiB/s ~ 3.7 MiB/s
+[12:25:26] 

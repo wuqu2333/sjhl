@@ -1,0 +1,37 @@
+[12:46:17] ============================================================
+[12:46:17]   SharePoint REST API vs Graph API Upload Speed Test
+[12:46:17]   Files: 3x REST + 3x Graph, 100 MiB each, chunk 40 MiB
+[12:46:17] ============================================================
+[12:46:17] Creating test file 1/6 (100 MiB)...
+[12:46:18] Creating test file 2/6 (100 MiB)...
+[12:46:18] Creating test file 3/6 (100 MiB)...
+[12:46:19] Creating test file 4/6 (100 MiB)...
+[12:46:19] Creating test file 5/6 (100 MiB)...
+[12:46:20] Creating test file 6/6 (100 MiB)...
+[12:46:21] Graph token obtained
+[12:46:21]   REST token response: ['token_type', 'expires_in', 'ext_expires_in', 'access_token'], status=200
+[12:46:21] REST token obtained
+[12:46:21]   REST /contextinfo response keys: []
+[12:46:21] REST auth failed: contextinfo failed 401: {}
+[12:46:21] Skipping REST tests, running Graph only
+[12:46:21] 
+Starting 3 REST + 3 Graph uploads...
+
+[12:46:27]   Graph #6 100 MiB avg 19.3 MiB/s
+[12:46:27]   Graph #4 100 MiB avg 18.2 MiB/s
+[12:46:28]   Graph #5 100 MiB avg 16.0 MiB/s
+[12:46:28] 
+============================================================
+[12:46:28]   RESULTS
+[12:46:28] ============================================================
+[12:46:28] 
+  REST API (0 files):
+[12:46:28]     REST: all failed
+[12:46:28] 
+  Graph API (3 files):
+[12:46:28]     f3.bin     100 MiB  18.2 MiB/s  (5.5s)
+[12:46:28]     f4.bin     100 MiB  16.0 MiB/s  (6.3s)
+[12:46:28]     f5.bin     100 MiB  19.3 MiB/s  (5.2s)
+[12:46:28]     Graph avg speed: 47.9 MiB/s
+[12:46:28] 
+  Total: 300 MiB / 6.6s

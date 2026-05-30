@@ -1,0 +1,32 @@
+# ── SJHL SP Manager - Docker Compose 部署 ──────────────────
+# 启动:  docker compose up -d
+# 查看:  docker compose logs -f
+# 停止:  docker compose down
+
+services:
+  sjhl:
+    build: .
+    container_name: sjhl
+    restart: unless-stopped
+    ports:
+      - "1115:1115"
+    volumes:
+      - sjhl-data:/app/data
+    environment:
+      - SJHL_HOST=0.0.0.0
+      - SJHL_PORT=1115
+      - SJHL_DATA_DIR=/app/data
+      - SJHL_CORS_ORIGINS=*
+      - SJHL_TRANSFER_CONCURRENCY=2
+      - SJHL_ENABLE_DOCS=0
+      - TZ=Asia/Shanghai
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:1115/api/state')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  sjhl-data:
+    driver: local

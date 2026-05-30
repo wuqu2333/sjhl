@@ -1,0 +1,18 @@
+{
+  "connections": [
+    {
+      "id": "5bf6091c-59d9-4b8b-8823-93d2b9a3604e",
+      "name": "test",
+      "authMode": "client_credentials",
+      "region": "cn",
+      "tenantId": "6c57e51c-678e-48ec-afdf-bcf6026f4208",
+      "clientId": "4493df60-6976-4787-8e2f-0bdde31b1499",
+      "clientSecret": "3Yn~w37p9Hd21_vz-Vb~nIiVagCQ_C.JZU",
+      "redirectUri": "http://localhost",
+      "refreshToken": "",
+      "scopes": "",
+      "createdAt": "2026-05-29T09:40:58.120262+00:00",
+      "updatedAt": "2026-05-29T09:40:58.120262+00:00"
+    }
+  ]
+}
