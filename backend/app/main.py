@@ -32,15 +32,21 @@ if FRONTEND_DIST_DIR.exists():
     if assets_dir.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="frontend-assets")
 
-
-@app.get("/{path:path}", include_in_schema=False)
-async def frontend_spa(path: str):
-    if path.startswith(("api/", "api", "docs", "redoc", "openapi.json")):
+    @app.get("/", include_in_schema=False)
+    async def frontend_index() -> FileResponse:
+        index_file = FRONTEND_DIST_DIR / "index.html"
+        if index_file.exists():
+            return FileResponse(index_file)
         raise HTTPException(status_code=404)
-    index_file = FRONTEND_DIST_DIR / "index.html"
-    if index_file.exists():
-        return FileResponse(index_file)
-    raise HTTPException(status_code=404)
+
+    @app.get("/{path:path}", include_in_schema=False)
+    async def frontend_spa(path: str) -> FileResponse:
+        if path.startswith(("api/", "api", "docs", "redoc", "openapi.json")):
+            raise HTTPException(status_code=404)
+        index_file = FRONTEND_DIST_DIR / "index.html"
+        if index_file.exists():
+            return FileResponse(index_file)
+        raise HTTPException(status_code=404)
 
 
 @app.on_event("startup")
