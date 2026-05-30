@@ -1,0 +1,21 @@
+# ── 飞牛 NAS 部署配置 ──────────────────────────────────────
+# 文件位置: /vol1/1000/test1
+# 启动:     docker compose -f docker-compose.nas.yml up -d
+# 查看日志: docker compose -f docker-compose.nas.yml logs -f
+# 停止:     docker compose -f docker-compose.nas.yml down
+
+services:
+  sjhl:
+    build: .
+    container_name: sjhl
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /vol1/1000/test1/data:/app/data
+    environment:
+      - SJHL_HOST=0.0.0.0
+      - SJHL_PORT=1115
+      - SJHL_DATA_DIR=/app/data
+      - SJHL_CORS_ORIGINS=*
+      - SJHL_TRANSFER_CONCURRENCY=2
+      - TZ=Asia/Shanghai
