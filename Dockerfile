@@ -10,7 +10,7 @@ COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --registry=https://registry.npmmirror.com
 
 COPY frontend/ ./
-RUN npx vite build --outDir dist
+RUN npx vite build --outDir /build/dist
 
 # ══ 阶段 2: 运行后端 ═══════════════════════════════════════
 FROM python:3.12-slim
